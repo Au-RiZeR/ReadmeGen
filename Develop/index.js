@@ -66,7 +66,7 @@ function choose() {
             type: 'list',
             name: 'choice',
             message: 'What size do you need?',
-            choices: ['PageTitle', 'SubTitle', 'Heading', 'Text', 'End'],
+            choices: ['Text', 'PageTitle', 'SubTitle', 'Heading', 'End'],
             filter: function (val) {
                 return val.toLowerCase();
             }
@@ -90,17 +90,12 @@ function addition(chosenAnswer) {
         {
             type: 'input',
             name: 'title',
-            message: `What would you like your ${chosenAnswer} to be called?`
-        },
-        {
-            type: 'input',
-            name: 'text',
-            message: `Please enter your paragraph, if you chose text hit enter`
+            message: `What would you like your ${chosenAnswer} to be say?`
         }
     ]).then(function (answers) {
 
 
-        content = `${prefix} ${answers.title}\n${answers.text}\n`
+        content = `${prefix} ${answers.title}\n`
         fs.appendFile(project + '.md', content, function (err) {
             if (err) throw err;
             console.log('Saved!');
