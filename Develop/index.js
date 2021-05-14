@@ -4,6 +4,7 @@ const fs = require('fs')
 var content
 var project = ''
 var license
+var author
 // TODO: Create an array of questions for user input
 const userInfo = [
     {
@@ -33,7 +34,7 @@ const prefixes = {
     pagetitle: '#',
     subtitle: '##',
     heading: '###',
-    subheading: '####'
+    text: '####'
 }
 
 // TODO: Create a function to initialize app
@@ -46,8 +47,13 @@ function init(questions) {
             license = licenses[chosenLicense]
             project = answers.projectName
             project = project.replace(/\s+/g, '')
+            author = answers.author
 
             content = `# ${answers.projectName}\n${license}\n`
+            fs.writeFile(project + '.md', content, function (err) {
+                if (err) throw err;
+                console.log('Saved!');
+            })
             choose()
         })
 }
@@ -60,16 +66,18 @@ function choose() {
             type: 'list',
             name: 'choice',
             message: 'What size do you need?',
-            choices: ['PageTitle', 'SubTitle', 'Heading', 'SubHeading', 'End'],
+            choices: ['PageTitle', 'SubTitle', 'Heading', 'Text', 'End'],
             filter: function (val) {
                 return val.toLowerCase();
             }
         }
     ]).then(answer => {
         if (answer.choice === "end") {
-            console.log(chosenLicense)
-            content += `## Licenses\nThis repository is licensed under the ${chosenLicense} license`
-            writeToFile(project, content)
+            content = `## Author/s and Acknowledgements\n${author}\n## Licenses\nThis repository is licensed under the ${chosenLicense} license`
+            fs.appendFile(project + '.md', content, function (err) {
+                if (err) throw err;
+                console.log('Saved!');
+            })
         } else {
             addition(answer.choice)
         }
@@ -77,7 +85,6 @@ function choose() {
     )
 }
 function addition(chosenAnswer) {
-    console.log(chosenAnswer)
     let prefix = prefixes[chosenAnswer]
     inq.prompt([
         {
@@ -88,12 +95,16 @@ function addition(chosenAnswer) {
         {
             type: 'input',
             name: 'text',
-            message: `Please enter your paragraph below`
+            message: `Please enter your paragraph, if you chose text hit enter`
         }
     ]).then(function (answers) {
 
 
-        content += `${prefix} ${answers.title}\n${answers.text}\n`
+        content = `${prefix} ${answers.title}\n${answers.text}\n`
+        fs.appendFile(project + '.md', content, function (err) {
+            if (err) throw err;
+            console.log('Saved!');
+        })
         choose()
     }
 
@@ -102,9 +113,9 @@ function addition(chosenAnswer) {
 //description, installation instructions, usage information, contribution guidelines, and test instructions
 
 // TODO: Create a function to write README file
-function writeToFile(name, data) {
-    fs.writeFile(name + '.md', data, function (err) {
-        if (err) throw err;
-        console.log('Saved!');
-    })
-}
+// function writeToFile(name, data) {
+//     fs.writeFile(name + '.md', data, function (err) {
+//         if (err) throw err;
+//         console.log('Saved!');
+//     })
+// }
